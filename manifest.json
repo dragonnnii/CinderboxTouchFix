@@ -1,0 +1,9 @@
+{
+  "Name": "Cinderbox Smart Click",
+  "Author": "User",
+  "Version": "1.0.0",
+  "Description": "Fuses Left and Right click for Cinderbox.",
+  "UniqueID": "Cinderbox.SmartClick",
+  "EntryDll": "CinderboxSmartClick.dll",
+  "MinimumApiVersion": "4.0.0"
+}
