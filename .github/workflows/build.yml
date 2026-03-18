@@ -9,29 +9,22 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '6.0.x'
 
       - name: Create and Build Project
         run: |
-          # 1. Create a new C# library project
           dotnet new classlib -n CinderboxSmartClick
-          
-          # 2. Add the Stardew Valley Modding tools
           dotnet add CinderboxSmartClick/CinderboxSmartClick.csproj package Pathoschild.Stardew.ModBuildConfig
-          
-          # 3. Move your ModEntry.cs into the project folder
           copy ModEntry.cs CinderboxSmartClick\ModEntry.cs
-          
-          # 4. Compile the code into a DLL
           dotnet build CinderboxSmartClick/CinderboxSmartClick.csproj -c Release
 
       - name: Upload DLL
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CinderboxSmartClick-DLL
           path: CinderboxSmartClick/bin/Release/net6.0/CinderboxSmartClick.dll
