@@ -1,7 +1,5 @@
 name: Build Mod
-on: 
-  push:
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 
 jobs:
   build:
@@ -15,17 +13,17 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
-      - name: Create Project and Build
+      - name: Force Build DLL
         run: |
-          # This command tells the builder exactly how to compile your DLL
-          dotnet new classlib -n CinderboxSmartClick
-          dotnet add CinderboxSmartClick/CinderboxSmartClick.csproj package Pathoschild.Stardew.ModBuildConfig
-          copy ModEntry.cs CinderboxSmartClick\ModEntry.cs
-          dotnet build CinderboxSmartClick/CinderboxSmartClick.csproj -c Release /p:IgnoreModGamePath=true
+          # 1. Create a project file that tells SMAPI to SHUT OFF the game-check
+          echo '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableModDeploy>false</EnableModDeploy><EnableModZip>false</EnableModZip><IgnoreModGamePath>true</IgnoreModGamePath></PropertyGroup><ItemGroup><PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" /></ItemGroup></Project>' > SmartClick.csproj
+          
+          # 2. Compile the DLL directly using the ModEntry.cs in your main folder
+          dotnet build SmartClick.csproj -c Release
 
       - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
           name: CinderboxSmartClick-DLL
-          path: CinderboxSmartClick/bin/Release/net6.0/CinderboxSmartClick.dll
+          path: bin/Release/net6.0/SmartClick.dll
           
