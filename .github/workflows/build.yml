@@ -1,7 +1,6 @@
 name: Build Mod
 on: 
   push:
-    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -16,19 +15,13 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
-      - name: Create and Build Project
+      - name: Create Project and Build
         run: |
-          # 1. Create the project folder
-          mkdir CinderboxSmartClick
-          
-          # 2. Create a custom .csproj file that ignores the game path by default
-          echo '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableModDeploy>false</EnableModDeploy><IgnoreModGamePath>true</IgnoreModGamePath></PropertyGroup><ItemGroup><PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" /></ItemGroup></Project>' > CinderboxSmartClick/CinderboxSmartClick.csproj
-          
-          # 3. Copy your code into the folder
+          # This command tells the builder exactly how to compile your DLL
+          dotnet new classlib -n CinderboxSmartClick
+          dotnet add CinderboxSmartClick/CinderboxSmartClick.csproj package Pathoschild.Stardew.ModBuildConfig
           copy ModEntry.cs CinderboxSmartClick\ModEntry.cs
-          
-          # 4. Build it
-          dotnet build CinderboxSmartClick/CinderboxSmartClick.csproj -c Release
+          dotnet build CinderboxSmartClick/CinderboxSmartClick.csproj -c Release /p:IgnoreModGamePath=true
 
       - name: Upload DLL
         uses: actions/upload-artifact@v4
