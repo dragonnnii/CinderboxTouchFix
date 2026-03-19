@@ -13,17 +13,21 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
-      - name: Force Build DLL
+      - name: Manual Compile
         run: |
-          # 1. Create a project file that tells SMAPI to SHUT OFF the game-check
-          echo '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net6.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableModDeploy>false</EnableModDeploy><EnableModZip>false</EnableModZip><IgnoreModGamePath>true</IgnoreModGamePath></PropertyGroup><ItemGroup><PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" /></ItemGroup></Project>' > SmartClick.csproj
+          # We create a simple project that doesn't check for the game
+          dotnet new classlib -n LeftClickAltar
           
-          # 2. Compile the DLL directly using the ModEntry.cs in your main folder
-          dotnet build SmartClick.csproj -c Release
+          # We manually add the SMAPI reference so it can understand your code
+          dotnet add LeftClickAltar/LeftClickAltar.csproj package Pathoschild.Stardew.ModBuildConfig --version 4.1.1
+          
+          # Move your code into the folder and build it
+          copy ModEntry.cs LeftClickAltar\ModEntry.cs
+          dotnet build LeftClickAltar/LeftClickAltar.csproj -c Release /p:IgnoreModGamePath=true
 
       - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
-          name: CinderboxSmartClick-DLL
-          path: bin/Release/net6.0/SmartClick.dll
+          name: LeftClickAltar-DLL
+          path: LeftClickAltar/bin/Release/net6.0/LeftClickAltar.dll
           
